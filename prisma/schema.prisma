@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,44 +8,37 @@ datasource db {
 }
 
 model User {
-  id String @id
-
-  conversations    Conversation[]
+  id               String         @id
+  createdAt        DateTime?      @default(now())
+  updatedAt        DateTime?      @updatedAt
   sentMessages     Message[]      @relation("sentMessage")
   receivedMessages Message[]      @relation("receivedMessage")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  conversations    Conversation[] @relation("ConversationToUser")
 
   @@map("user")
 }
 
 model Conversation {
-  id String @id @default(cuid())
-
-  users    User[]
-  messages Message[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  messages  Message[]
+  users     User[]    @relation("ConversationToUser")
 
   @@map("conversation")
 }
 
 model Message {
-  id      String @id @default(cuid())
-  content String @db.VarChar(255)
-
+  id             String       @id @default(cuid())
+  content        String       @db.VarChar(255)
   fromUserId     String
   toUserId       String
   conversationId String
-
-  fromUser     User         @relation("sentMessage", fields: [fromUserId], references: [id])
-  toUser       User         @relation("receivedMessage", fields: [toUserId], references: [id])
-  conversation Conversation @relation(fields: [conversationId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime?    @default(now())
+  updatedAt      DateTime?    @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  fromUser       User         @relation("sentMessage", fields: [fromUserId], references: [id])
+  toUser         User         @relation("receivedMessage", fields: [toUserId], references: [id])
 
   @@map("message")
 }
