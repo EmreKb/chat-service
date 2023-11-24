@@ -49,11 +49,13 @@ export class ChatGateway
   }
 
   handleConnection(socket: Socket) {
-    this.sockets.set(socket.id, socket);
+    this.logger.debug(`User Id ${socket.user.id} connected`);
+    this.sockets.set(socket.user.id, socket);
   }
 
   handleDisconnect(socket: Socket) {
-    this.sockets.delete(socket.id);
+    this.logger.debug(`User id ${socket.user.id} disconnected`);
+    this.sockets.delete(socket.user.id);
   }
 
   @SubscribeMessage('message')
@@ -61,6 +63,8 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() messageDto: MessageDto,
   ) {
-    await this.chatService.sendMessage(socket.user, messageDto);
+    const message = await this.chatService.sendMessage(socket.user, messageDto);
+    socket.emit('message', message);
+    this.sockets.get(message.toUserId)?.emit('message', message);
   }
 }

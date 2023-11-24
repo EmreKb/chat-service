@@ -4,6 +4,7 @@ import { ConversationService } from '../conversation/conversation.service';
 import { UserService } from '../user/user.service';
 import { MessageDto } from './dto';
 import { User } from '../user/user.type';
+import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class ChatService {
@@ -12,6 +13,9 @@ export class ChatService {
 
   @Inject(ConversationService)
   private readonly conversationService: ConversationService;
+
+  @Inject(MessageService)
+  private readonly messageService: MessageService;
 
   private readonly logger = new Logger(ChatService.name);
 
@@ -24,6 +28,17 @@ export class ChatService {
       messageDto.to,
     ]);
 
-    this.logger.debug(conversation);
+    const message = await this.messageService.createMessage({
+      content: messageDto.content,
+      toUserId: toUser.id,
+      fromUserId: user.id,
+      conversationId: conversation.id,
+    });
+
+    this.logger.debug(
+      `Sended message to ${message.fromUserId} to ${message.toUserId} | ${message.content}`,
+    );
+
+    return message;
   }
 }

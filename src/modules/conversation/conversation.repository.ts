@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/common/service';
-import { Conversation } from './conversation.type';
 
 @Injectable()
 export class ConversationRepository {
@@ -20,7 +19,7 @@ export class ConversationRepository {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      select: { users: true },
+      select: { users: true, id: true },
     });
   }
 
@@ -34,7 +33,7 @@ export class ConversationRepository {
           },
         },
       },
-      select: { users: true },
+      select: { users: true, id: true },
     });
   }
 }
