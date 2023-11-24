@@ -17,11 +17,11 @@ sequenceDiagram
     participant your-server
     client->>chat-service: Send socket connection with jwt header
     chat-service->>your-server: Verify token
-    your-service->>chat-service: Send user for verified token
+    your-server->>chat-service: Send user for verified token
     chat-service->>client: Apply socket connection request
     client->>chat-service: Send message event
     note over chat-service: Check user
-    chat-service-->>yor-server: Get user by id
+    chat-service-->>your-server: Get user by id
     your-server-->>chat-service: Send user id
     chat-service->>client: Sended message
 ```
