@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { PaginationQueryDto } from 'src/common/dto';
 import { PrismaService } from 'src/common/service';
 
 @Injectable()
@@ -34,6 +35,22 @@ export class ConversationRepository {
         },
       },
       select: { users: true, id: true },
+    });
+  }
+
+  async getLastConversations(
+    id: string,
+    paginationQueryDto: PaginationQueryDto,
+  ) {
+    return await this.prismaService.user.findUnique({
+      where: { id },
+      select: {
+        conversations: {
+          select: { messages: { take: 1, orderBy: { createdAt: 'desc' } } },
+          take: paginationQueryDto.limit,
+          skip: (paginationQueryDto.page - 1) * paginationQueryDto.limit,
+        },
+      },
     });
   }
 }
